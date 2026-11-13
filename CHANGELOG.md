@@ -4,6 +4,14 @@ All notable changes to this project will be documented here.
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Added
+
+- **Light colour (#65).** An optional colour in the wizard / options makes the
+  light ramp go dim to bright in that colour (e.g. red) instead of warm to
+  cool white. Leave it blank to keep the colour-temperature ramp.
+
 ## 0.5.6 — 2026-10-26
 
 ### Fixed

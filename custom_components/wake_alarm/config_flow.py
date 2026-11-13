@@ -27,6 +27,7 @@ from .const import (
     CONF_AT_ALARM_SCRIPT,
     CONF_BEFORE_SCRIPT,
     CONF_CONDITION_ENTITY,
+    CONF_LIGHT_COLOR,
     CONF_LIGHT_ENTITIES,
     CONF_MEDIA_PLAYER_ENTITIES,
     CONF_NOTIFY_TAP_PATH,
@@ -119,6 +120,13 @@ def _build_schema(
     ] = selector.EntitySelector(
         selector.EntitySelectorConfig(domain="light", multiple=True)
     )
+
+    fields[
+        vol.Optional(
+            CONF_LIGHT_COLOR,
+            description={"suggested_value": defaults.get(CONF_LIGHT_COLOR)},
+        )
+    ] = selector.ColorRGBSelector()
 
     fields[
         vol.Optional(
@@ -236,6 +244,10 @@ def _validate_input(
                 errors.update(player_errors)
                 placeholders.update(ph)
 
+    color = user_input.get(CONF_LIGHT_COLOR)
+    if color:
+        data[CONF_LIGHT_COLOR] = list(color)
+
     person = user_input.get(CONF_PERSON_ENTITY)
     if person:
         data[CONF_PERSON_ENTITY] = person
@@ -264,7 +276,7 @@ def _validate_input(
 class WakeAlarmConfigFlow(ConfigFlow, domain=DOMAIN):
     """Single-screen create flow."""
 
-    VERSION = 6
+    VERSION = 7
 
     @staticmethod
     @callback
@@ -321,6 +333,7 @@ class WakeAlarmOptionsFlow(OptionsFlow):
                 merged.update(new_data)
                 # Drop optional fields that were cleared in this submit.
                 for k in (
+                    CONF_LIGHT_COLOR,
                     CONF_PERSON_ENTITY,
                     CONF_CONDITION_ENTITY,
                     CONF_BEFORE_SCRIPT,

@@ -42,6 +42,7 @@ from .const import (
     CONF_AT_ALARM_SCRIPT,
     CONF_BEFORE_SCRIPT,
     CONF_CONDITION_ENTITY,
+    CONF_LIGHT_COLOR,
     CONF_LIGHT_ENTITIES,
     CONF_MEDIA_PLAYER_ENTITIES,
     CONF_PERSON_ENTITY,
@@ -1101,8 +1102,10 @@ class WakeAlarmCoordinator:
         """Issue a tagged light.turn_on.
 
         The Context is tracked so the light state listener can distinguish
-        our own changes from user overrides.
+        our own changes from user overrides. A configured light colour (#65)
+        replaces the Kelvin ramp; only the brightness ramps then.
         """
+        color = self.entry.data.get(CONF_LIGHT_COLOR)
         ctx = Context()
         self._track_context(ctx)
         await self.hass.services.async_call(
@@ -1111,7 +1114,11 @@ class WakeAlarmCoordinator:
             {
                 "entity_id": entity_ids,
                 "brightness_pct": brightness_pct,
-                "color_temp_kelvin": kelvin,
+                **(
+                    {"rgb_color": color}
+                    if color
+                    else {"color_temp_kelvin": kelvin}
+                ),
             },
             blocking=False,
             context=ctx,

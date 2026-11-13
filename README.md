@@ -85,7 +85,10 @@ slug HA derived from your alarm's name.
    step linearly up to `max_brightness_pct` / `target_kelvin` over
    `length_min × steps_per_min` steps (default 20 steps/min). The ramp
    never dims a light below its current brightness — if you manually
-   brighten a bedroom light mid-ramp it stays brightened.
+   brighten a bedroom light mid-ramp it stays brightened. Set
+   `light_color` (optional, in the wizard / options) to ramp in a fixed
+   colour instead, e.g. a dim-to-bright red; only the brightness ramps
+   then and the Kelvin settings are ignored.
 3. **Music start** (`alarm_time`). State goes to `playing`. For a
    single speaker the integration first takes it out of any speaker
    group (Sonos and other players that support grouping), so the alarm

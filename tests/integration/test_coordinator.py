@@ -14,6 +14,7 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timedelta, timezone
 
+import pytest
 from pytest_homeassistant_custom_component.common import (
     async_fire_time_changed,
     async_mock_service,
@@ -1197,3 +1198,34 @@ async def test_alarm_time_change_rearms_timers(env, freezer) -> None:
     await fire(env.hass, freezer, at(8, 0))
     await env.hass.async_block_till_done()
     assert env.music.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("overrides", "color_attrs"),
+    [
+        pytest.param({}, {"color_temp_kelvin": 2000}, id="kelvin-by-default"),
+        pytest.param(
+            {"light_color": [255, 60, 0]},
+            {"rgb_color": [255, 60, 0]},
+            id="configured-color-replaces-kelvin",
+        ),
+    ],
+)
+async def test_light_turn_on_color(
+    env, freezer, overrides: dict, color_attrs: dict
+) -> None:
+    freezer.move_to(at(5, 0))
+    coord = await env.build(env.make_entry(**overrides), days=SAT)
+    calls = async_mock_service(env.hass, "light", "turn_on")
+
+    await coord.async_call_light_turn_on(
+        ["light.bedroom"], brightness_pct=10, kelvin=2000
+    )
+    await env.hass.async_block_till_done()
+
+    assert len(calls) == 1
+    assert calls[0].data == {
+        "entity_id": ["light.bedroom"],
+        "brightness_pct": 10,
+        **color_attrs,
+    }
