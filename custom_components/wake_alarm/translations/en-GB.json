@@ -1,0 +1,17 @@
+{
+  "entity": {
+    "select": {
+      "light_mode": {
+        "state": {
+          "color_temp": "Colour temperature",
+          "color": "Colour"
+        }
+      }
+    },
+    "text": {
+      "light_color": {
+        "name": "Light colour"
+      }
+    }
+  }
+}

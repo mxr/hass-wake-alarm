@@ -15,3 +15,11 @@
 export function showsMediaControls(players: readonly string[] | undefined): boolean {
   return !!players && players.length > 0;
 }
+
+/**
+ * The card's text is US English; British English (HA's "en-GB") gets
+ * "colour". The integration's own strings use HA translations instead.
+ */
+export function spellColor(text: string, language: string | undefined): string {
+  return language === "en-GB" ? text.replace(/olor/g, "olour") : text;
+}

@@ -143,6 +143,8 @@ All entity IDs follow the pattern `<platform>.<slug>_<purpose>`. Entity friendly
 | `number.<slug>_steps_per_min` | 5 to 60, step 1 | 20 | Light ramp granularity |
 | `number.<slug>_music_fade_sec` | 0 to 300, step 5 | 60 | Volume fade duration after play starts |
 | `number.<slug>_auto_dismiss_min` | 0 to 120, step 1 | 0 | Auto-dismiss timeout (0 disables) |
+| `select.<slug>_light_mode` | `color_temp`, `color` | `color_temp` | Ramp the Kelvin range, or one colour (#65) |
+| `text.<slug>_light_color` | `#RRGGBB` | `#FF3C00` | Ramp colour in `color` mode |
 
 **Action entities (buttons):**
 
@@ -203,7 +205,7 @@ Stepped, default 20 steps per minute. Total steps = `length_min × steps_per_min
 1. Compute target brightness percent linearly from 1% to `max_brightness_pct`
 2. Compute target Kelvin linearly from `start_kelvin` to `target_kelvin`
 3. Read each light's current brightness; clamp the next-step brightness to never dim below current (preserves user override behaviour from the YAML)
-4. Issue `light.turn_on` with `brightness_pct` and `color_temp_kelvin` for all configured lights in a single call
+4. Issue `light.turn_on` with `brightness_pct` and `color_temp_kelvin` for all configured lights in a single call. In `color` light mode, `rgb_color` from `text.<slug>_light_color` replaces `color_temp_kelvin`, so only the brightness ramps
 
 Initial state: lights set to 1% brightness at `start_kelvin` at ramp start. Lights that are off at ramp start are turned on.
 
@@ -362,6 +364,7 @@ Mirrors the second and third attached screenshots:
 - Length (min) slider: `number.<slug>_length_min`
 - Start K slider: `number.<slug>_start_kelvin`
 - Target K slider: `number.<slug>_target_kelvin`
+- Light mode dropdown: `select.<slug>_light_mode`. In `color` mode the Start/Target K sliders are hidden and a colour picker bound to `text.<slug>_light_color` is shown
 - Max % Brightness slider: `number.<slug>_max_brightness_pct`
 - Cancel Ramp button: visible only when `sensor.<slug>_state == "ramping"`. Calls `button.<slug>_cancel_ramp`.
 - Test Music button: calls `button.<slug>_test_music`

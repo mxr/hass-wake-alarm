@@ -112,13 +112,13 @@
       "light_mode": {
         "name": "Light mode",
         "state": {
-          "color_temp": "Colour temperature",
-          "color": "Colour"
+          "color_temp": "Color temperature",
+          "color": "Color"
         }
       }
     },
     "text": {
-      "light_color": { "name": "Light colour" }
+      "light_color": { "name": "Light color" }
     },
     "sensor": {
       "next_alarm": { "name": "Next Alarm" },

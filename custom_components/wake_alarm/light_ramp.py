@@ -8,6 +8,8 @@ Ports scripts.alarm_light_ramp from the legacy YAML:
   lights that are off)
 * Each step interpolates brightness 1% → max_brightness_pct and Kelvin
   start_kelvin → target_kelvin linearly across denom = total_steps - 1
+* In colour light mode the coordinator sends rgb_color instead of the
+  Kelvin value, so only the brightness ramps (#65)
 * next_brightness = max(linear_target, current_brightness) — never dim
   a manually-brightened light
 * Stop early if any configured light's brightness already meets/exceeds

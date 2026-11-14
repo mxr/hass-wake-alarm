@@ -10,9 +10,9 @@ Lovelace card included.
 ## Features
 
 - **Stepped sunrise ramp** with brightness + colour-temperature
-  interpolation, defaulting to 20 steps/min. Never dims a light below
-  its current brightness, so if you brighten the room mid-ramp it
-  stays.
+  interpolation (or dim-to-bright in one fixed colour), defaulting to
+  20 steps/min. Never dims a light below its current brightness, so if
+  you brighten the room mid-ramp it stays.
 - **Music fade-in** from 0 to a configured target volume across
   `music_fade_sec`. Random track-skip so every alarm and every snooze
   starts on a different track from the favourite.

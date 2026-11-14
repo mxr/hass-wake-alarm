@@ -86,7 +86,7 @@ slug HA derived from your alarm's name.
    `length_min × steps_per_min` steps (default 20 steps/min). The ramp
    never dims a light below its current brightness — if you manually
    brighten a bedroom light mid-ramp it stays brightened. Set
-   `select.my_alarm_light_mode` to Colour to ramp in a fixed colour
+   `select.my_alarm_light_mode` to `color` to ramp in a fixed colour
    instead (`text.my_alarm_light_color`, e.g. a dim-to-bright red); only
    the brightness ramps then and the Kelvin settings are ignored.
 3. **Music start** (`alarm_time`). State goes to `playing`. For a

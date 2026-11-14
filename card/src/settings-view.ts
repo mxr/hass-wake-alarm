@@ -1,7 +1,7 @@
 import { LitElement, css, html, type PropertyValues, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { sharedStyles } from "./styles";
-import { showsMediaControls } from "./view-logic";
+import { showsMediaControls, spellColor } from "./view-logic";
 import "./media-browser";
 import "./media-thumb";
 import type { HomeAssistant, MediaPickedItem, RelatedEntities } from "./types";
@@ -38,13 +38,13 @@ const SLIDERS: NumberSpec[] = [
   {
     key: "start_kelvin",
     label: "Start K",
-    description: "Warm colour temperature at the beginning of the ramp.",
+    description: "Warm color temperature at the beginning of the ramp.",
     min: 1500, max: 6500, step: 50,
   },
   {
     key: "target_kelvin",
     label: "Target K",
-    description: "Cool colour temperature reached at the alarm time.",
+    description: "Cool color temperature reached at the alarm time.",
     min: 1500, max: 6500, step: 50,
   },
   {
@@ -250,7 +250,9 @@ export class WakeAlarmSettingsView extends LitElement {
           <span class="label">${spec.label}</span>
           <span class="value">${display}</span>
         </div>
-        <div class="slider-desc">${spec.description}</div>
+        <div class="slider-desc">
+          ${spellColor(spec.description, this.hass.language)}
+        </div>
         <input
           type="range"
           min=${spec.min}
@@ -266,6 +268,7 @@ export class WakeAlarmSettingsView extends LitElement {
   private _renderLightMode(colorMode: boolean, lightColor: string): TemplateResult {
     if (!this.hass || !this.related) return html``;
     const r = this.related;
+    const t = (text: string): string => spellColor(text, this.hass?.language);
     return html`
       <div class="slider-row">
         <div class="slider-head">
@@ -279,19 +282,19 @@ export class WakeAlarmSettingsView extends LitElement {
               })}
           >
             <option value="color_temp" ?selected=${!colorMode}>
-              Colour temperature
+              ${t("Color temperature")}
             </option>
-            <option value="color" ?selected=${colorMode}>Colour</option>
+            <option value="color" ?selected=${colorMode}>${t("Color")}</option>
           </select>
         </div>
         <div class="slider-desc">
-          Ramp from warm to cool white, or dim to bright in one colour.
+          ${t("Ramp from warm to cool white, or dim to bright in one color.")}
         </div>
       </div>
       ${colorMode
         ? html`<div class="slider-row">
             <div class="slider-head">
-              <span class="label">Light colour</span>
+              <span class="label">${t("Light color")}</span>
               <input
                 type="color"
                 .value=${lightColor.toLowerCase()}
@@ -302,7 +305,7 @@ export class WakeAlarmSettingsView extends LitElement {
                   })}
               />
             </div>
-            <div class="slider-desc">Colour the lights ramp in.</div>
+            <div class="slider-desc">${t("Color the lights ramp in.")}</div>
           </div>`
         : null}
     `;

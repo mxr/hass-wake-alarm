@@ -19,7 +19,11 @@ from __future__ import annotations
 import homeassistant.config_entries as _config_entries
 import pytest
 from homeassistant.const import CONF_NAME
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from homeassistant.core import State
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    mock_restore_cache_with_extra_data,
+)
 
 from custom_components.wake_alarm.const import (
     CONF_LIGHT_ENTITIES,
@@ -69,3 +73,62 @@ async def test_full_entry_setup_and_unload(hass, card_frontend) -> None:
 
     assert await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()
+
+
+@pytest.mark.skipif(
+    not _HAS_CONFIG_FLOW_RESULT,
+    reason="integration config_flow requires ConfigFlowResult (HA 2024.4+)",
+)
+async def test_light_mode_and_color_restored(hass, card_frontend) -> None:
+    """The light mode and colour survive a restart (#65)."""
+    mock_restore_cache_with_extra_data(
+        hass,
+        [
+            (State("select.smoke_light_mode", "color"), {}),
+            (
+                State("text.smoke_light_color", "#00FF00"),
+                {"native_value": "#00FF00", "native_min": 7, "native_max": 7},
+            ),
+        ],
+    )
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        version=2,
+        unique_id="smoke",
+        data={
+            CONF_NAME: "Smoke",
+            CONF_SLUG: "smoke",
+            CONF_LIGHT_ENTITIES: ["light.bedroom"],
+            CONF_MEDIA_PLAYER_ENTITIES: [],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert hass.states.get("select.smoke_light_mode").state == "color"
+    assert hass.states.get("text.smoke_light_color").state == "#00FF00"
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
+
+
+@pytest.mark.parametrize(
+    ("language", "mode_name", "color_name"),
+    [
+        pytest.param("en", "Light mode", "Light color", id="en-us-spelling"),
+        pytest.param("en-GB", "Light mode", "Light colour", id="en-gb-spelling"),
+    ],
+)
+async def test_light_color_translations(
+    hass, language: str, mode_name: str, color_name: str
+) -> None:
+    """en is US English; en-GB overrides only the "colour" strings (#65)."""
+    from homeassistant.helpers.translation import async_get_translations
+
+    strings = await async_get_translations(hass, language, "entity", [DOMAIN])
+    prefix = f"component.{DOMAIN}.entity"
+    # Light mode has no en-GB override, so it falls back to en.
+    assert strings[f"{prefix}.select.light_mode.name"] == mode_name
+    assert strings[f"{prefix}.text.light_color.name"] == color_name
