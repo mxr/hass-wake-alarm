@@ -63,6 +63,9 @@ async def test_full_entry_setup_and_unload(hass, card_frontend) -> None:
     assert coordinator is not None
     # The enable switch should have been created by the switch platform.
     assert hass.states.get("switch.smoke_enabled") is not None
+    # Light ramp mode defaults to the colour-temperature ramp (#65).
+    assert hass.states.get("select.smoke_light_mode").state == "color_temp"
+    assert hass.states.get("text.smoke_light_color").state == "#FF3C00"
 
     assert await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()

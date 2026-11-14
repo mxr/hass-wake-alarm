@@ -25,7 +25,6 @@ from custom_components.wake_alarm.const import (
     CONF_AT_ALARM_SCRIPT,
     CONF_BEFORE_SCRIPT,
     CONF_CONDITION_ENTITY,
-    CONF_LIGHT_COLOR,
     CONF_LIGHT_ENTITIES,
     CONF_MEDIA_PLAYER_ENTITIES,
     CONF_NOTIFY_TAP_PATH,
@@ -112,20 +111,6 @@ async def test_validate_input_stores_notify_tap_path(hass) -> None:
     assert errors == {}
     # Stored verbatim (trimmed); normalisation happens at send time.
     assert data[CONF_NOTIFY_TAP_PATH] == "lovelace/0"
-
-
-async def test_validate_input_stores_light_color(hass) -> None:
-    errors, _ph, data = _validate_input(
-        hass,
-        {
-            CONF_NAME: "Test",
-            CONF_LIGHT_ENTITIES: ["light.x"],
-            CONF_LIGHT_COLOR: [255, 60, 0],
-        },
-        require_name=True,
-    )
-    assert errors == {}
-    assert data[CONF_LIGHT_COLOR] == [255, 60, 0]
 
 
 # -------------------- _validate_players --------------------
@@ -223,9 +208,8 @@ async def test_options_flow_drops_cleared_optional_fields(hass) -> None:
             CONF_NOTIFY_TARGET_STANDARD: "notify.mobile",
             CONF_NOTIFY_TARGET_URGENT: "notify.mobile",
             CONF_NOTIFY_TAP_PATH: "lovelace/0",
-            CONF_LIGHT_COLOR: [255, 60, 0],
         },
-        version=7,
+        version=6,
         unique_id="test",
     )
     entry.add_to_hass(hass)
@@ -253,7 +237,6 @@ async def test_options_flow_drops_cleared_optional_fields(hass) -> None:
         CONF_NOTIFY_TARGET_STANDARD,
         CONF_NOTIFY_TARGET_URGENT,
         CONF_NOTIFY_TAP_PATH,
-        CONF_LIGHT_COLOR,
     ):
         assert k not in data
     # Immutable identity fields preserved.

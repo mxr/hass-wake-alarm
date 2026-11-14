@@ -12,6 +12,8 @@ PLATFORMS: list[Platform] = [
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
     Platform.BUTTON,
+    Platform.SELECT,
+    Platform.TEXT,
 ]
 
 # Config entry data keys (CONF_NAME comes from homeassistant.const)
@@ -26,7 +28,6 @@ CONF_AFTER_SCRIPT = "after_script"
 CONF_NOTIFY_TARGET_STANDARD = "notify_target_standard"
 CONF_NOTIFY_TARGET_URGENT = "notify_target_urgent"
 CONF_NOTIFY_TAP_PATH = "notify_tap_path"
-CONF_LIGHT_COLOR = "light_color"
 
 # Days of week. Each entry is (entity_key, translation_key).
 #
@@ -75,6 +76,13 @@ DEFAULT_SNOOZE_MIN = 4
 DEFAULT_STEPS_PER_MIN = 20
 DEFAULT_MUSIC_FADE_SEC = 60
 DEFAULT_AUTO_DISMISS_MIN = 0
+
+# Light ramp mode (select.<slug>_light_mode) and the colour used in colour mode
+# (text.<slug>_light_color, #RRGGBB).
+LIGHT_MODE_COLOR_TEMP = "color_temp"
+LIGHT_MODE_COLOR = "color"
+DEFAULT_LIGHT_COLOR = "#FF3C00"
+LIGHT_COLOR_PATTERN = r"^#[0-9A-Fa-f]{6}$"
 
 # Once the music has faded in, the alarm ends (as if dismissed) when none of its
 # media players has been playing for this long, e.g. the user stopped it on the

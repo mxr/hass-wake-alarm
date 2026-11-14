@@ -20,6 +20,8 @@ interface NumberSpec {
   displayMultiplier?: number;
 }
 
+const KELVIN_KEYS: NumberSpec["key"][] = ["start_kelvin", "target_kelvin"];
+
 const SLIDERS: NumberSpec[] = [
   {
     key: "snooze_min",
@@ -101,6 +103,8 @@ export class WakeAlarmSettingsView extends LitElement {
     const players = (nextAlarm?.attributes?.media_player_entities as string[]) ?? [];
     const person = nextAlarm?.attributes?.person_entity as string | null | undefined;
     const showMedia = showsMediaControls(players);
+    const colorMode = this.hass.states[r.lightMode]?.state === "color";
+    const lightColor = this.hass.states[r.lightColor]?.state ?? "#FF3C00";
 
     return html`
       <ha-card>
@@ -112,7 +116,16 @@ export class WakeAlarmSettingsView extends LitElement {
         </div>
 
         <div class="section">
-          ${SLIDERS.map((s) => this._renderSlider(s))}
+          ${SLIDERS.map(
+            (s) => html`
+              ${s.key === "start_kelvin"
+                ? this._renderLightMode(colorMode, lightColor)
+                : null}
+              ${colorMode && KELVIN_KEYS.includes(s.key)
+                ? null
+                : this._renderSlider(s)}
+            `,
+          )}
         </div>
 
         <div class="section actions">
@@ -247,6 +260,51 @@ export class WakeAlarmSettingsView extends LitElement {
           @change=${(ev: Event) => this._setNumber(id, ev, multiplier)}
         />
       </div>
+    `;
+  }
+
+  private _renderLightMode(colorMode: boolean, lightColor: string): TemplateResult {
+    if (!this.hass || !this.related) return html``;
+    const r = this.related;
+    return html`
+      <div class="slider-row">
+        <div class="slider-head">
+          <span class="label">Light mode</span>
+          <select
+            class="light-mode"
+            @change=${(ev: Event) =>
+              this.hass?.callService("select", "select_option", {
+                entity_id: r.lightMode,
+                option: (ev.target as HTMLSelectElement).value,
+              })}
+          >
+            <option value="color_temp" ?selected=${!colorMode}>
+              Colour temperature
+            </option>
+            <option value="color" ?selected=${colorMode}>Colour</option>
+          </select>
+        </div>
+        <div class="slider-desc">
+          Ramp from warm to cool white, or dim to bright in one colour.
+        </div>
+      </div>
+      ${colorMode
+        ? html`<div class="slider-row">
+            <div class="slider-head">
+              <span class="label">Light colour</span>
+              <input
+                type="color"
+                .value=${lightColor.toLowerCase()}
+                @change=${(ev: Event) =>
+                  this.hass?.callService("text", "set_value", {
+                    entity_id: r.lightColor,
+                    value: (ev.target as HTMLInputElement).value.toUpperCase(),
+                  })}
+              />
+            </div>
+            <div class="slider-desc">Colour the lights ramp in.</div>
+          </div>`
+        : null}
     `;
   }
 
@@ -390,6 +448,10 @@ export class WakeAlarmSettingsView extends LitElement {
       .slider-head {
         display: flex;
         align-items: center;
+      }
+      .slider-head select,
+      .slider-head input[type="color"] {
+        margin-left: auto;
       }
       .slider-row input[type="range"] {
         width: 100%;

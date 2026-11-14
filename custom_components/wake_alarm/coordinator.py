@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from datetime import time as dt_time
@@ -34,6 +35,7 @@ from homeassistant.helpers.event import (
     async_track_state_change_event,
 )
 from homeassistant.util import dt as dt_util
+from homeassistant.util.color import rgb_hex_to_rgb_list
 
 from ._pure import ScheduleDecision, compute_next_fire, plan_schedule
 from .const import (
@@ -42,7 +44,6 @@ from .const import (
     CONF_AT_ALARM_SCRIPT,
     CONF_BEFORE_SCRIPT,
     CONF_CONDITION_ENTITY,
-    CONF_LIGHT_COLOR,
     CONF_LIGHT_ENTITIES,
     CONF_MEDIA_PLAYER_ENTITIES,
     CONF_PERSON_ENTITY,
@@ -50,7 +51,10 @@ from .const import (
     DAYS,
     DEFAULT_AUTO_DISMISS_MIN,
     DEFAULT_LENGTH_MIN,
+    DEFAULT_LIGHT_COLOR,
     DEFAULT_SNOOZE_MIN,
+    LIGHT_COLOR_PATTERN,
+    LIGHT_MODE_COLOR,
     MUSIC_STOPPED_GRACE_SEC,
     STATE_IDLE,
     STATE_PLAYING,
@@ -1102,10 +1106,10 @@ class WakeAlarmCoordinator:
         """Issue a tagged light.turn_on.
 
         The Context is tracked so the light state listener can distinguish
-        our own changes from user overrides. A configured light colour (#65)
-        replaces the Kelvin ramp; only the brightness ramps then.
+        our own changes from user overrides. In colour mode (#65) the light
+        colour replaces the Kelvin ramp; only the brightness ramps then.
         """
-        color = self.entry.data.get(CONF_LIGHT_COLOR)
+        color = self.read_light_color()
         ctx = Context()
         self._track_context(ctx)
         await self.hass.services.async_call(
@@ -1304,6 +1308,17 @@ class WakeAlarmCoordinator:
             if st is not None and st.state == "on":
                 result.add(idx)
         return result
+
+    def read_light_color(self) -> list[int] | None:
+        """RGB for colour mode, or None for the colour-temperature ramp."""
+        mode = self.hass.states.get(f"select.{self.slug}_light_mode")
+        if mode is None or mode.state != LIGHT_MODE_COLOR:
+            return None
+        st = self.hass.states.get(f"text.{self.slug}_light_color")
+        value = st.state if st is not None else ""
+        if not re.fullmatch(LIGHT_COLOR_PATTERN, value):
+            value = DEFAULT_LIGHT_COLOR
+        return rgb_hex_to_rgb_list(value[1:])
 
     def read_number(self, key: str, default: float) -> float:
         """Public so light_ramp / music_sequence can pull config values."""

@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- **Light colour (#65).** An optional colour in the wizard / options makes the
-  light ramp go dim to bright in that colour (e.g. red) instead of warm to
-  cool white. Leave it blank to keep the colour-temperature ramp.
+- **Light colour (#65).** A new Light mode setting picks between the
+  colour-temperature ramp (the default) and a colour ramp, where the lights go
+  dim to bright in one colour (e.g. red) instead of warm to cool white. Set the
+  colour with Light colour. Both are on the device page and in the card's
+  settings, which hides the Kelvin sliders in colour mode.
 
 ## 0.5.6 — 2026-10-26
 

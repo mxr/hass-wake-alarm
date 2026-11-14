@@ -1200,22 +1200,38 @@ async def test_alarm_time_change_rearms_timers(env, freezer) -> None:
     assert env.music.calls == 1
 
 
+
 @pytest.mark.parametrize(
-    ("overrides", "color_attrs"),
+    ("mode", "color", "color_attrs"),
     [
-        pytest.param({}, {"color_temp_kelvin": 2000}, id="kelvin-by-default"),
         pytest.param(
-            {"light_color": [255, 60, 0]},
+            None, None, {"color_temp_kelvin": 2000}, id="no-mode-entity-uses-kelvin"
+        ),
+        pytest.param(
+            "color_temp",
+            "#FF0000",
+            {"color_temp_kelvin": 2000},
+            id="color-temp-mode-ignores-color",
+        ),
+        pytest.param(
+            "color", "#ff3c00", {"rgb_color": [255, 60, 0]}, id="color-mode"
+        ),
+        pytest.param(
+            "color",
+            "red",
             {"rgb_color": [255, 60, 0]},
-            id="configured-color-replaces-kelvin",
+            id="color-mode-bad-hex-uses-default",
         ),
     ],
 )
 async def test_light_turn_on_color(
-    env, freezer, overrides: dict, color_attrs: dict
+    env, freezer, mode: str | None, color: str | None, color_attrs: dict
 ) -> None:
     freezer.move_to(at(5, 0))
-    coord = await env.build(env.make_entry(**overrides), days=SAT)
+    coord = await env.build(env.make_entry(), days=SAT)
+    if mode is not None:
+        env.hass.states.async_set("select.test_light_mode", mode)
+        env.hass.states.async_set("text.test_light_color", color)
     calls = async_mock_service(env.hass, "light", "turn_on")
 
     await coord.async_call_light_turn_on(

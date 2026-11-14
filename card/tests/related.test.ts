@@ -40,6 +40,8 @@ const FULL_REGISTRY: EntityRegistryEntry[] = [
   makeEntry("number.bedroom_steps_per_min", `${ENTRY}_steps_per_min`),
   makeEntry("number.bedroom_music_fade_sec", `${ENTRY}_music_fade_sec`),
   makeEntry("number.bedroom_auto_dismiss_min", `${ENTRY}_auto_dismiss_min`),
+  makeEntry("select.bedroom_light_mode", `${ENTRY}_light_mode`),
+  makeEntry("text.bedroom_light_color", `${ENTRY}_light_color`),
   makeEntry("button.bedroom_test_light_ramp", `${ENTRY}_test_light_ramp`),
   makeEntry("button.bedroom_cancel_ramp", `${ENTRY}_cancel_ramp`),
   makeEntry("button.bedroom_test_music", `${ENTRY}_test_music`),
@@ -70,6 +72,8 @@ describe("buildRelated", () => {
     expect(r.days.sun).toBe("switch.bedroom_d7_sun");
     expect(r.numbers.start_kelvin).toBe("number.bedroom_start_kelvin");
     expect(r.numbers.auto_dismiss_min).toBe("number.bedroom_auto_dismiss_min");
+    expect(r.lightMode).toBe("select.bedroom_light_mode");
+    expect(r.lightColor).toBe("text.bedroom_light_color");
     expect(r.buttons.snooze).toBe("button.bedroom_snooze");
     expect(r.buttons.test_music).toBe("button.bedroom_test_music");
     expect(r.sensors.media_selection).toBe("sensor.bedroom_media_selection");

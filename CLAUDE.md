@@ -20,7 +20,7 @@ re-explained each session.
 ## Architecture (integration)
 
 - `__init__.py` — `async_setup_entry` / `async_unload_entry`, the config-entry
-  migration (`async_migrate_entry`, **currently entry version 7**), and the
+  migration (`async_migrate_entry`, **currently entry version 6**), and the
   Lovelace card registration (`_async_register_card`, signs nothing — serves the
   static bundle and stores it as a Lovelace resource; `async_remove_entry` drops
   the resource with the last alarm). `add_extra_js_url` is only the fallback
@@ -39,7 +39,7 @@ re-explained each session.
 - `_pure.py` — HA-free scheduling math (`plan_schedule`, next-fire/rollover/DST).
   Kept import-free of `homeassistant` so it's unit-testable in isolation.
 - `const.py` — `DOMAIN`, `PLATFORMS` (switch, time, number, sensor,
-  binary_sensor, button), `DAYS`, and all `CONF_*` entry-data keys
+  binary_sensor, button, select, text), `DAYS`, and all `CONF_*` entry-data keys
   (`CONF_SLUG`, `CONF_LIGHT_ENTITIES`, `CONF_MEDIA_PLAYER_ENTITIES`,
   `CONF_PERSON_ENTITY`, `CONF_NOTIFY_TARGET_STANDARD/URGENT`; `CONF_NAME` from
   `homeassistant.const`).
@@ -47,7 +47,7 @@ re-explained each session.
   HA 2024.4+). New user-configurable options go here **and** in the options flow.
 - `light_ramp.py`, `music_sequence.py`, `notifications.py`, `services.py`
   (incl. the `set_media` service), and the entity platforms
-  `switch/number/time/sensor/binary_sensor/button/entity.py`.
+  `switch/number/time/sensor/binary_sensor/button/select/text/entity.py`.
 
 When adding fields to config-entry **data**, bump the entry version and extend
 `async_migrate_entry`, and provide sensible defaults for existing entries.

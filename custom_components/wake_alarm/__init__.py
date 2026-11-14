@@ -132,12 +132,8 @@ async def async_migrate_entry(
     v5 → v6: added the optional notification tap path (deep-link the
     notification to a dashboard). Additive optional field — absence of the key
     means tapping does nothing — so this step only advances the version.
-
-    v6 → v7: added the optional light colour (#65). Additive optional field —
-    absence of the key means the colour-temperature ramp — so this step only
-    advances the version.
     """
-    if entry.version > 7:
+    if entry.version > 6:
         _LOGGER.error(
             "wake_alarm config entry %s is at version %s, cannot downgrade",
             entry.title,
@@ -182,9 +178,6 @@ async def async_migrate_entry(
 
     if entry.version == 5:
         hass.config_entries.async_update_entry(entry, version=6)
-
-    if entry.version == 6:
-        hass.config_entries.async_update_entry(entry, version=7)
 
     return True
 

@@ -127,6 +127,8 @@ export function buildRelated(
     enabled: need("enabled"),
     active: need("active"),
     alarmTime: need("alarm_time"),
+    lightMode: need("light_mode"),
+    lightColor: need("light_color"),
     days,
     numbers,
     buttons,

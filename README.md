@@ -86,9 +86,9 @@ slug HA derived from your alarm's name.
    `length_min × steps_per_min` steps (default 20 steps/min). The ramp
    never dims a light below its current brightness — if you manually
    brighten a bedroom light mid-ramp it stays brightened. Set
-   `light_color` (optional, in the wizard / options) to ramp in a fixed
-   colour instead, e.g. a dim-to-bright red; only the brightness ramps
-   then and the Kelvin settings are ignored.
+   `select.my_alarm_light_mode` to Colour to ramp in a fixed colour
+   instead (`text.my_alarm_light_color`, e.g. a dim-to-bright red); only
+   the brightness ramps then and the Kelvin settings are ignored.
 3. **Music start** (`alarm_time`). State goes to `playing`. For a
    single speaker the integration first takes it out of any speaker
    group (Sonos and other players that support grouping), so the alarm
@@ -284,6 +284,8 @@ cards, automations…).
 - `number.my_alarm_steps_per_min` (5–60)
 - `number.my_alarm_music_fade_sec` (0–300)
 - `number.my_alarm_auto_dismiss_min` (0–120, 0 disables)
+- `select.my_alarm_light_mode` (`color_temp` default, or `color`)
+- `text.my_alarm_light_color` (`#RRGGBB`, used in colour mode)
 
 ### Action buttons
 

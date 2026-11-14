@@ -80,6 +80,9 @@ export interface RelatedEntities {
     music_fade_sec: string;
     auto_dismiss_min: string;
   };
+  // Light ramp mode (select) and colour-mode colour (text, #RRGGBB)
+  lightMode: string;
+  lightColor: string;
   // Action buttons
   buttons: {
     test_light_ramp: string;
